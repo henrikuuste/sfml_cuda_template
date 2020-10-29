@@ -1,10 +1,16 @@
 #pragma once
 
+#pragma warning(push, 0)
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
+#pragma warning(pop)
 
 namespace cuda {
+
+#define CU_HD __host__ __device__
+#define CU_D __device__
+#define CU_H __host__
 
 #ifdef __DRIVER_TYPES_H__
 static const char *errorName(cudaError_t error) { return cudaGetErrorName(error); }
@@ -147,8 +153,8 @@ inline int gpuGetMaxGflopsDeviceId() {
         sm_per_multiproc = _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
       }
 
-      uint64_t compute_perf =
-          (uint64_t)deviceProp.multiProcessorCount * sm_per_multiproc * deviceProp.clockRate;
+      uint64_t compute_perf = static_cast<uint64_t>(deviceProp.multiProcessorCount) *
+                              sm_per_multiproc * deviceProp.clockRate;
 
       if (compute_perf > max_compute_perf) {
         max_compute_perf = compute_perf;
