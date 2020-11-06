@@ -1,6 +1,6 @@
 #include "full_screen_opengl.h"
 
-#include <cuda_gl_interop.h>
+// #include <cuda_gl_interop.h>
 
 FullScreenOpenGLScene::FullScreenOpenGLScene(sf::RenderWindow const &window) {
   glewInit();
@@ -19,35 +19,35 @@ FullScreenOpenGLScene::FullScreenOpenGLScene(sf::RenderWindow const &window) {
   glBufferData(GL_ARRAY_BUFFER, width * height * sizeof(Pixel), 0, GL_DYNAMIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  cudaGraphicsGLRegisterBuffer(&cudaVBO_, glVBO_, cudaGraphicsMapFlagsNone);
+  // cudaGraphicsGLRegisterBuffer(&cudaVBO_, glVBO_, cudaGraphicsMapFlagsNone);
 
   spdlog::debug("VBO created [{} {}]", width, height);
-  // screenBuffer_.resize(width * height);
-  // for (unsigned int row = 0; row < height; ++row) {
-  //  for (unsigned int col = 0; col < width; ++col) {
-  //    auto idx                               = row * width + col;
-  //    screenBuffer_[idx].x                   = col;
-  //    screenBuffer_[idx].y                   = row;
-  //    screenBuffer_[idx].color.components[0] = col * 255 / width;
-  //    screenBuffer_[idx].color.components[1] = row * 255 / height;
-  //    screenBuffer_[idx].color.components[2] = 0;
-  //    screenBuffer_[idx].color.components[3] = 255;
-  //  }
-  //}
+  screenBuffer_.resize(width * height);
+  for (unsigned int row = 0; row < height; ++row) {
+   for (unsigned int col = 0; col < width; ++col) {
+     auto idx                               = row * width + col;
+     screenBuffer_[idx].x                   = col;
+     screenBuffer_[idx].y                   = row;
+     screenBuffer_[idx].color.components[0] = col * 255 / width;
+     screenBuffer_[idx].color.components[1] = row * 255 / height;
+     screenBuffer_[idx].color.components[2] = 0;
+     screenBuffer_[idx].color.components[3] = 255;
+   }
+  }
 }
 
 FullScreenOpenGLScene::~FullScreenOpenGLScene() { glDeleteBuffers(1, &glVBO_); }
 
 void FullScreenOpenGLScene::update([[maybe_unused]] AppContext &ctx) {
-  CUDA_CALL(cudaGraphicsMapResources(1, &cudaVBO_, 0));
-  size_t num_bytes;
-  CUDA_CALL(cudaGraphicsResourceGetMappedPointer((void **)&vboPtr_, &num_bytes, cudaVBO_));
-  renderCuda();
-  CUDA_CALL(cudaGraphicsUnmapResources(1, &cudaVBO_, 0));
+  //CUDA_CALL(cudaGraphicsMapResources(1, &cudaVBO_, 0));
+  //size_t num_bytes;
+  //CUDA_CALL(cudaGraphicsResourceGetMappedPointer((void **)&vboPtr_, &num_bytes, cudaVBO_));
+  //renderCuda();
+  //CUDA_CALL(cudaGraphicsUnmapResources(1, &cudaVBO_, 0));
 
-  // glBindBuffer(GL_ARRAY_BUFFER, glVBO_);
-  // glBufferData(GL_ARRAY_BUFFER, screenBuffer_.size() * sizeof(Pixel), screenBuffer_.data(),
-  //             GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ARRAY_BUFFER, glVBO_);
+   glBufferData(GL_ARRAY_BUFFER, screenBuffer_.size() * sizeof(Pixel), screenBuffer_.data(),
+               GL_DYNAMIC_DRAW);
 }
 
 void FullScreenOpenGLScene::render(sf::RenderWindow &window) {

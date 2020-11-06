@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../common.h"
-#include "../cuda_memory.hpp"
+// #include "../cuda_memory.hpp"
 #include <GL/glew.h>
 
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -15,12 +15,12 @@ public:
   void render(sf::RenderWindow &window);
 
 private:
-  void renderCuda();
+  // void renderCuda();
 
   unsigned int width, height;
 
-  // std::vector<Pixel> screenBuffer_;
+  std::vector<Pixel> screenBuffer_;
   GLuint glVBO_;
-  cudaGraphicsResource_t cudaVBO_;
-  cuda::raw_ptr<Pixel> vboPtr_;
+  // cudaGraphicsResource_t cudaVBO_;
+  // cuda::raw_ptr<Pixel> vboPtr_;
 };
